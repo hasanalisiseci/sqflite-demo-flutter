@@ -48,8 +48,8 @@ class _HomePageState extends State<HomePage> {
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                buildButton("Kaydet"),
-                buildButton("Güncelle")
+                buildButton("Kaydet", Colors.green, saveObject),
+                buildButton("Güncelle", Colors.yellow, updateObject)
               ]),
           Expanded(
               child: ListView.builder(
@@ -87,24 +87,44 @@ class _HomePageState extends State<HomePage> {
                 InputDecoration(labelText: str, border: OutlineInputBorder())));
   }
 
-  Widget buildButton(String str) {
+  Widget buildButton(String str, Color buttonColor, Function eventFunc) {
     return RaisedButton(
-        child: Text(str),
-        color: str == "Kaydet" ? Colors.green : Colors.yellow,
-        onPressed: str == "Kaydet"
-            ? () {
-                if (_formKey.currentState.validate()) {
-                  _addNote(Notes(_controllerTitle.text, _controllerDesc.text));
-                }
-              }
-            : clickedNoteID == null
-                ? null
-                : () {
-                    if (_formKey.currentState.validate()) {
-                      _uptadeNote(Notes.withID(clickedNoteID,
-                          _controllerTitle.text, _controllerDesc.text));
-                    }
-                  });
+      child: Text(str),
+      color: buttonColor,
+      onPressed: () {
+        eventFunc();
+      },
+    );
+  }
+
+  void updateObject() {
+    if (clickedNoteID != null) {
+      if (_formKey.currentState.validate()) {
+        _uptadeNote(Notes.withID(
+            clickedNoteID, _controllerTitle.text, _controllerDesc.text));
+      }
+    } else {
+      alert();
+    }
+  }
+
+  void saveObject() {
+    if (_formKey.currentState.validate()) {
+      _addNote(Notes(_controllerTitle.text, _controllerDesc.text));
+    }
+  }
+
+  void alert() {
+    AlertDialog alert = AlertDialog(
+      title: Text("SEÇİLİ NOT YOK!"),
+      content: Text("Lütfen bir not seçerek güncelleme işlemi yapınız!"),
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   //Crud İşlemlerinin AraYüze Uygulanması
